@@ -51,7 +51,11 @@ class song():
             tptr += sixteenth_t
                 
         return 0
+    ##########################################
 
+
+
+    ##########################################
     def _mid2mp3(self):
         #mid2wav
         fs=FluidSynth()
