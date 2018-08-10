@@ -8,7 +8,7 @@ from locale import atof
 import accompaniant as acc
 AudioSegment.converter = "/usr/bin/ffmpeg"
 chordlabel2num = {
-        'C':0,'B#':0, 'N':0,
+        'C':0,'B#':0,
 	'C#':1,'Db':1,
 	'D':2,
 	'D#':3,'Eb':3,
@@ -33,8 +33,6 @@ chordlabel2num = {
     'A#:min':22,'Bb:min':22,
     'B:min':23,'Cb:min':23
 	}
-
-
 
 class song():
     resolution = 960
