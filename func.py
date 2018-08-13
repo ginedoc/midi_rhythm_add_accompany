@@ -89,6 +89,7 @@ def load_data(notes, chords):
     return notes, chords
 
 def get_tempo(mid):
+    tempo = 500000
     for m in mid:
         if m.is_meta and m.type=='set_tempo':
             tempo = m.tempo

@@ -148,7 +148,7 @@ class song():
         for m in self.track:
             if m.is_meta and m.type=='set_tempo':
                 return m.tempo
-
+        return 500000
     def _chord2index(self, chord):
         for i, c in enumerate(chord):
             chord[i]=chordlabel2num[c]
