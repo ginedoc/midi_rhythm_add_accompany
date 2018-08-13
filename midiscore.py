@@ -1,11 +1,14 @@
+import numpy as np
 import mido
-import pyace.pyace.pyace as pyace
+import pyace
 from midi2audio import FluidSynth
 from pydub import AudioSegment
 import os
 import locale
 from locale import atof
 import accompaniant as acc
+from func import midi2pianoroll, roll2ration
+from keras.models import load_model
 AudioSegment.converter = "/usr/bin/ffmpeg"
 chordlabel2num = {
         'C':0,'B#':0,
@@ -64,7 +67,22 @@ class song():
         elif type==16:
             res=self.resolution/4
         return int(res)
-    def chord_estimation(self):
+    def chord_estimation(self, model=None):
+        # estimation using out model
+        notes, seg_t = midi2pianoroll(self.track_name)
+        note_ratio = []
+        chord = []
+        for i in range(0, len(notes), 8):
+            note_ratio.append(roll2ration(notes[i:i+8]))
+        note_ratio = np.array(note_ratio)
+        model = load_model(model)
+        predict = model.predict(note_ratio)
+        for half_measure in predict:
+            chord.append(np.argmax(half_measure))
+        print(chord)   
+        return chord         
+        
+        """Estimation using pyace
         self._mid2mp3()
         info_timechord = pyace.simpleace(self.mp3path, 'resources/time_domain.txt')
         #info_timechord = pyace.deepace(self.mp3path, 'resources/time_domain.txt', 'fcnn' ,'./pyace/model/fcnn512/CJKURB.cg.model')
@@ -85,6 +103,7 @@ class song():
          
         info_16=self._chord2index(info_16)       
         return info_16
+        """
     ##########################################
     def add_accompaniant(self, chord_arr, instrument, type=0):
         accTrack=mido.MidiTrack()

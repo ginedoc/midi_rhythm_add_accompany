@@ -21,15 +21,19 @@ def _add_bass(chord, instr, type, tick_s):
     last=-1
     note=[mido.Message('program_change', program=instr, channel=1, time=0)]
     for i, c in enumerate(chord):
-        if last!=c:
             note.append(mido.Message('note_on', note=chord[i]%12+48, channel=1, time=0))
-            note.append(mido.Message('note_off', note=chord[i]%12+48, channel=1, time=tick_s))
-        elif i%16==0:
-            note.append(mido.Message('note_on', note=chord[i]%12+48, channel=1, time=0))
-            note.append(mido.Message('note_off', note=chord[i]%12+48, channel=1, time=tick_s))
-        else:
-            note.append(mido.Message('note_off', note=chord[i]%12+48, channel=1, time=tick_s))
-        last=c
+            if i+1<len(chord) and chord[i+1]-c==2:
+                note.append(mido.Message('note_off', note=chord[i]%12+48, channel=1, time=6*tick_s))
+                note.append(mido.Message('note_on', note=chord[i]%12+48-1, channel=1, time=0))
+                note.append(mido.Message('note_off', note=chord[i]%12+48-1, channel=1, time=2*tick_s))
+            elif i+1<len(chord) and chord[i+1]-c==-2:
+                note.append(mido.Message('note_off', note=chord[i]%12+48, channel=1, time=6*tick_s))
+                note.append(mido.Message('note_on', note=chord[i]%12+48+1, channel=1, time=0))
+                note.append(mido.Message('note_off', note=chord[i]%12+48+1, channel=1, time=2*tick_s))
+            else:
+                note.append(mido.Message('note_off', note=chord[i]%12+48, channel=1, time=6*tick_s))
+                note.append(mido.Message('note_on', note=chord[i]%12+48, channel=1, time=0))
+                note.append(mido.Message('note_off', note=chord[i]%12+48, channel=1, time=2*tick_s))
     return note
 
 def _add_piano(chord, instr, type, tick_s):
@@ -39,22 +43,23 @@ def _add_piano(chord, instr, type, tick_s):
     
     note=[mido.Message('program_change', program=instr, channel=2, time=0)]
 
-    for i in range(0, len(chord), 4):
-        note.append(mido.Message('note_on', note=chord[i]%12+60, channel=2, time=0))
+    for i,c in enumerate(chord):
+        for _ in range(2):
+            note.append(mido.Message('note_on', note=chord[i]%12+60, channel=2, time=0))
         
-        if chord[i]<12:
-            note.append(mido.Message('note_on', note=chord[i]%12+60+4, channel=2, time=0))
-            note.append(mido.Message('note_on', note=chord[i]%12+60+7, channel=2, time=0))
-            note.append(mido.Message('note_off', note=chord[i]%12+60+4, channel=2, time=4*tick_s))
-            note.append(mido.Message('note_off', note=chord[i]%12+60+7, channel=2, time=0))
-        elif chord[i]>=12:
-            note.append(mido.Message('note_on', note=chord[i]%12+60+3, channel=2, time=0))
-            note.append(mido.Message('note_on', note=chord[i]%12+60+7, channel=2, time=0))
-            note.append(mido.Message('note_off', note=chord[i]%12+60+3, channel=2, time=4*tick_s))
-            note.append(mido.Message('note_off', note=chord[i]%12+60+7, channel=2, time=0))
+            if chord[i]<12:
+                note.append(mido.Message('note_on', note=chord[i]%12+60+4, channel=2, time=0))
+                note.append(mido.Message('note_on', note=chord[i]%12+60+7, channel=2, time=0))
+                note.append(mido.Message('note_off', note=chord[i]%12+60+4, channel=2, time=4*tick_s))
+                note.append(mido.Message('note_off', note=chord[i]%12+60+7, channel=2, time=0))
+            elif chord[i]>=12:
+                note.append(mido.Message('note_on', note=chord[i]%12+60+3, channel=2, time=0))
+                note.append(mido.Message('note_on', note=chord[i]%12+60+7, channel=2, time=0))
+                note.append(mido.Message('note_off', note=chord[i]%12+60+3, channel=2, time=4*tick_s))
+                note.append(mido.Message('note_off', note=chord[i]%12+60+7, channel=2, time=0))
         
-        #note.append(mido.Message('note_off', note=chord[i]%12+60, channel=2, time=4*tick_s))
-        note.append(mido.Message('note_off', note=chord[i]%12+60, channel=2, time=0))
+            #note.append(mido.Message('note_off', note=chord[i]%12+60, channel=2, time=4*tick_s))
+            note.append(mido.Message('note_off', note=chord[i]%12+60, channel=2, time=0))
 
     return note
 
